@@ -156,7 +156,10 @@ var (
 func DBsession() *dbsession {
 
 	if sessionIns == nil {
-		session, err_database := mgo.Dial("127.0.0.1:27017")
+		// dbaddress := "127.0.0.1:27017"
+		dbaddress := "172.19.0.3:27017"
+
+		session, err_database := mgo.Dial(dbaddress)
 		if err_database != nil {
 			panic(err_database)
 		}

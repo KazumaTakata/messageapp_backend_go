@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -131,17 +130,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		password := loginform.Password
 
 		user := session.GetByName(name)
-		fmt.Printf(user.ID.Hex())
+		// fmt.Printf(user.ID.Hex())
 
 		if user == nil {
 			userid := session.InsertUser(name, password)
 
 			// Set some claims
-			token := jwt.New(jwt.SigningMethodRS512)
-			claims := make(jwt.MapClaims)
-			claims["exp"] = time.Now().Add(time.Minute * 50000).Unix()
-			claims["id"] = userid
-			token.Claims = claims
+			token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &model.Token{
+				ID: userid.Hex(),
+			})
+
 			tokenString, err := token.SignedString([]byte("secret"))
 
 			if err != nil {

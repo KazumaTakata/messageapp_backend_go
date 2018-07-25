@@ -2,6 +2,7 @@ package main
 
 import (
 	"http_server/controller"
+	"http_server/db"
 	"http_server/message"
 	"http_server/middleware"
 	"log"
@@ -12,6 +13,7 @@ import (
 
 func main() {
 	// fs := http.FileServer(http.Dir("static"))
+	db.DBsession()
 	r := mux.NewRouter()
 	// r.Handle("/", fs)
 	r.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("./static"))))
