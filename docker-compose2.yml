@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    image: http_server_web  
+    ports:
+     - "8181:8181"
+    tty: true
+  mongoins:
+    image: "mongo"
+networks:
+  webnet:

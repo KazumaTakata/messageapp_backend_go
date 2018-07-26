@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"http_server/model"
 
 	mgo "gopkg.in/mgo.v2"
@@ -21,7 +22,7 @@ func (db *dbsession) AddFriend(myid string, friendid string) {
 	// Update
 	err := c.Update(query, update)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 
@@ -35,7 +36,7 @@ func (db *dbsession) UpdateOne(fieldname string, fieldvalue interface{}, myid st
 	// Update
 	err := c.Update(query, update)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 
@@ -47,7 +48,7 @@ func (db *dbsession) FindOneByName(name string) model.User {
 	err := c.Find(bson.M{"name": name}).One(&result)
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	return result
@@ -61,7 +62,7 @@ func (db *dbsession) FindOneById(userid string) model.User {
 	err := c.Find(bson.M{"_id": bson.ObjectIdHex(userid)}).One(&result)
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	return result
@@ -103,7 +104,7 @@ func (db *dbsession) InsertUser(name string, password string) bson.ObjectId {
 	})
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	return i
@@ -115,7 +116,7 @@ func (db *dbsession) InsertFeed(feedcontent string, userid string, photourl stri
 	err := c.Insert(&model.Feed{Feedcontent: feedcontent, UserId: userid, Photourl: photourl})
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 
@@ -129,7 +130,7 @@ func (db *dbsession) GetFeed(friendids []string) []model.Feed {
 	}
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	return result
@@ -144,7 +145,7 @@ func (db *dbsession) InsertTalk(friendid string, content string, myId string) {
 	// Update
 	err := c.Update(query, update)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 }
@@ -157,11 +158,11 @@ func DBsession() *dbsession {
 
 	if sessionIns == nil {
 		// dbaddress := "127.0.0.1:27017"
-		dbaddress := "172.19.0.3:27017"
+		dbaddress := "messenger_mongo:27017"
 
-		session, err_database := mgo.Dial(dbaddress)
-		if err_database != nil {
-			panic(err_database)
+		session, err := mgo.Dial(dbaddress)
+		if err != nil {
+			fmt.Println(err)
 		}
 		sessionIns = &dbsession{
 			session: session,
