@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"http_server/config"
 	"http_server/model"
 
 	mgo "gopkg.in/mgo.v2"
@@ -66,6 +67,28 @@ func (db *dbsession) FindOneById(userid string) model.User {
 	}
 
 	return result
+}
+
+func (db *dbsession) Find() []model.User {
+	c := db.session.DB("swiftline").C("users")
+
+	var result []model.User
+	err := c.Find(bson.M{}).All(&result)
+	if err != nil {
+
+	}
+
+	return result
+
+}
+
+func (db *dbsession) RemoveAll() {
+	c := db.session.DB("swiftline").C("users")
+	_, err := c.RemoveAll(bson.M{})
+	if err != nil {
+
+	}
+
 }
 
 func (db *dbsession) FindById(friendIds []bson.ObjectId) []model.User {
@@ -158,7 +181,9 @@ func DBsession() *dbsession {
 
 	if sessionIns == nil {
 		// dbaddress := "127.0.0.1:27017"
-		dbaddress := "messenger_mongo:27017"
+		// dbaddress := "messenger_mongo:27017"
+		dbaddress := config.Database_path
+		fmt.Println(dbaddress)
 
 		session, err := mgo.Dial(dbaddress)
 		if err != nil {
