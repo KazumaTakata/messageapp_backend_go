@@ -129,7 +129,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		name := loginform.Name
 		password := loginform.Password
 
-		user := session.GetByName(name)
+		user := session.FindOneByName(name)
 		// fmt.Printf(user.ID.Hex())
 
 		if user == nil {

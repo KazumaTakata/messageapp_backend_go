@@ -41,18 +41,15 @@ func (db *dbsession) UpdateOne(fieldname string, fieldvalue interface{}, myid st
 	}
 }
 
-func (db *dbsession) FindOneByName(name string) model.User {
-
+func (db *dbsession) FindOneByName(name string) *model.User {
 	c := db.session.DB("swiftline").C("users")
 
 	var result model.User
 	err := c.Find(bson.M{"name": name}).One(&result)
-
 	if err != nil {
-		fmt.Println(err)
+		return nil
 	}
-
-	return result
+	return &result
 }
 
 func (db *dbsession) FindOneById(userid string) model.User {
@@ -102,17 +99,6 @@ func (db *dbsession) FindById(friendIds []bson.ObjectId) []model.User {
 
 	return result
 
-}
-
-func (db *dbsession) GetByName(name string) *model.User {
-	c := db.session.DB("swiftline").C("users")
-
-	var result model.User
-	err := c.Find(bson.M{"name": name}).One(&result)
-	if err != nil {
-		return nil
-	}
-	return &result
 }
 
 func (db *dbsession) InsertUser(name string, password string) bson.ObjectId {
@@ -183,12 +169,14 @@ func DBsession() *dbsession {
 		// dbaddress := "127.0.0.1:27017"
 		// dbaddress := "messenger_mongo:27017"
 		dbaddress := config.Database_path
-		fmt.Println(dbaddress)
+		fmt.Printf("database address is %s\n", dbaddress)
 
 		session, err := mgo.Dial(dbaddress)
 		if err != nil {
 			fmt.Println(err)
+			fmt.Printf("connection to database failed")
 		}
+		fmt.Printf("connection to database %s is success\n", dbaddress)
 		sessionIns = &dbsession{
 			session: session,
 		}
