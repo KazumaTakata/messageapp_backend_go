@@ -11,20 +11,15 @@ import (
 	"testing"
 )
 
-func TestLoginHandler(t *testing.T) {
+func loginuser(name string, password string) *model.Login {
 	url := "http://localhost:8181/api/login/"
 
-	dbsession := db.DBsession()
-	dbsession.RemoveAll()
-	defer dbsession.RemoveAll()
-	fmt.Println("URL:>", url)
-
-	loginmodel := &model.LoginForm{Name: "newuser", Password: "newpass"}
+	loginmodel := &model.LoginForm{Name: name, Password: password}
 
 	loginjson, err := json.Marshal(loginmodel)
 	if err != nil {
 		fmt.Println(err)
-		return
+
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(loginjson))
@@ -46,9 +41,18 @@ func TestLoginHandler(t *testing.T) {
 	loginreturn := &model.Login{}
 	err = json.Unmarshal(body, loginreturn)
 
-	if err != nil {
-		panic(err)
-	}
+	return loginreturn
+}
+
+func TestLoginHandler(t *testing.T) {
+	url := "http://localhost:8181/api/login/"
+
+	dbsession := db.DBsession()
+	dbsession.RemoveAll()
+	defer dbsession.RemoveAll()
+	fmt.Println("URL:>", url)
+
+	loginreturn := loginuser("newuser", "password")
 
 	if loginreturn.Login != true {
 		t.Fatalf("ID is not matched")
@@ -59,4 +63,41 @@ func TestLoginHandler(t *testing.T) {
 	if len(users) != 1 {
 		t.Fatalf("number of user is not correct")
 	}
+
+	loginreturn2 := loginuser("newuser2", "password2")
+
+	if loginreturn2.Login != true {
+		t.Fatalf("ID is not matched")
+	}
+
+	users2 := dbsession.Find()
+
+	if len(users2) != 2 {
+		t.Fatalf("number of user is not correct")
+	}
+
+	loginreturn3 := loginuser("newuser", "password")
+
+	if loginreturn3.Login != true {
+		t.Fatalf("ID is not matched")
+	}
+
+	users3 := dbsession.Find()
+
+	if len(users3) != 2 {
+		t.Fatalf("number of user is not correct")
+	}
+
+	loginreturn4 := loginuser("newuser", "password_wrong")
+
+	if loginreturn4.Login != false {
+		t.Fatalf("password ")
+	}
+
+	users4 := dbsession.Find()
+
+	if len(users4) != 2 {
+		t.Fatalf("number of user is not correct")
+	}
+
 }
