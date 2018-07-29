@@ -88,6 +88,10 @@ func TestLoginHandler(t *testing.T) {
 		t.Fatalf("number of user is not correct")
 	}
 
+	if loginreturn3.ID != loginreturn.ID {
+		t.Fatalf("ID is not matched")
+	}
+
 	loginreturn4 := loginuser("newuser", "password_wrong")
 
 	if loginreturn4.Login != false {
