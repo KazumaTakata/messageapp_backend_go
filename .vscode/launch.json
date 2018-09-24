@@ -5,15 +5,45 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
+      "name": "loginservice",
       "type": "go",
       "request": "launch",
       "mode": "debug",
       "remotePath": "",
       "port": 2345,
       "host": "127.0.0.1",
-      "program": "${workspaceRoot}",
-      "env": {},
+      "program": "${workspaceRoot}/services/loginservice/main.go",
+      "env": { "MICRO_REGISTRY": "mdns" },
+      "args": [],
+      "showLog": true
+    },
+    {
+      "name": "loginclient",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "remotePath": "",
+      "port": 2345,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}/services/loginservice/client/client.go",
+      "env": {
+        "MICRO_REGISTRY": "mdns"
+      },
+      "args": [],
+      "showLog": true
+    },
+    {
+      "name": "main",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "remotePath": "",
+      "port": 2345,
+      "host": "127.0.0.1",
+      "program": "${workspaceRoot}/main.go",
+      "env": {
+        "MICRO_REGISTRY": "mdns"
+      },
       "args": [],
       "showLog": true
     }

@@ -1,17 +1,20 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"http_server/db"
 	"http_server/middleware"
 	"http_server/model"
+	proto "http_server/services/loginservice/proto"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	microclient "github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/cmd"
+
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
@@ -125,54 +128,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
+		cmd.Init()
 
-		name := loginform.Name
-		password := loginform.Password
+		client := proto.NewLoginServiceClient("go.micro.srv.login", microclient.DefaultClient)
 
-		user := session.FindOneByName(name)
-		// fmt.Printf(user.ID.Hex())
+		var userdata proto.Userdata
 
-		if user == nil {
-			userid := session.InsertUser(name, password)
+		userdata.Name = loginform.Name
+		userdata.Password = loginform.Password
 
-			// Set some claims
-			token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &model.Token{
-				ID: userid.Hex(),
-			})
+		// Call the greeter
 
-			tokenString, err := token.SignedString([]byte("secret"))
+		login, err := client.LoginOrSignup(context.TODO(), &userdata)
 
-			if err != nil {
-
-			}
-
-			login := model.Login{Login: true, Token: tokenString, ID: userid.Hex(), Name: name}
-			json.NewEncoder(w).Encode(login)
-
-		} else {
-			if user.Password == password {
-
-				token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &model.Token{
-					ID: user.ID.Hex(),
-				})
-
-				tokenstring, err := token.SignedString([]byte("secret"))
-				if err != nil {
-					log.Fatalln(err)
-				}
-
-				if err != nil {
-
-				}
-
-				login := model.Login{Login: true, Token: tokenstring, ID: user.ID.Hex(), Name: name}
-				json.NewEncoder(w).Encode(login)
-
-			} else {
-				login := model.Login{Login: false}
-				json.NewEncoder(w).Encode(login)
-			}
+		if err != nil {
 		}
+
+		json.NewEncoder(w).Encode(login)
 
 	}
 }
